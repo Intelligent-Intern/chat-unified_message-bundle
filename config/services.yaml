@@ -1,0 +1,14 @@
+
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  IntelligentIntern\ChatUnifiedMessageBundle\Service\:
+    resource: '../src/Service/*'
+    public: true
+    tags:
+      - { name: 'unified_message.strategy' }
+
+

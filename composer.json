@@ -1,0 +1,22 @@
+{
+  "name": "intelligent-intern/chat-unified_message-bundle",
+  "description": "Intelligent Intern bundle for UnifiedMessage integration",
+  "type": "intelligent-intern-bundle",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "IntelligentIntern\\ChatUnifiedMessageBundle\\": "src/"
+    }
+  },
+  "require": {
+    "php": "^8.2",
+    "symfony/http-client": "7.2.*",
+    "symfony/framework-bundle": "7.2.*",
+    "justinrainbow/json-schema": "6.2.*"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-main": "1.0-dev"
+    }
+  }
+}
