@@ -13,7 +13,7 @@ use App\Factory\LogServiceFactory;
 use App\Contract\LogServiceInterface;
 use App\Service\VaultService;
 use Exception;
-use IntelligentIntern\ChatUnifiedMessageBundle\Payload\InterviewChatPayload;
+use IntelligentIntern\ChatUnifiedMessageBundle\Payload\ChatPayload;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -49,7 +49,7 @@ class ChatUnifiedMessageService implements UnifiedMessageServiceInterface
         $this->logger = $this->logServiceFactory->create();
         $chatConfig = $this->vaultService->fetchSecret('secret/data/data/config');
         $this->retryDelaySec = $chatConfig['retryDelaySec'] ?? 15;
-        $this->logger->debug('InterviewChatUnifiedMessageService constructed', [
+        $this->logger->debug('ChatUnifiedMessageService constructed', [
             'retryDelaySec' => $this->retryDelaySec,
         ]);
     }
@@ -59,6 +59,9 @@ class ChatUnifiedMessageService implements UnifiedMessageServiceInterface
         return $module === 'chat';
     }
 
+    /**
+     * @throws Exception
+     */
     public function handleMessage(UnifiedMessage $message): void
     {
         $chatPrompt = $message->getPayload();
@@ -122,7 +125,7 @@ JSON;
                 ->create('openai')
                 ->generateResponse('gpt4o', $chatMemory);
 
-            $payloadJson = InterviewChatPayload::factory()
+            $payloadJson = ChatPayload::factory()
                 ->createJson(
                     'chat',
                     $chatPrompt['chatHistoryId'] ?? '',
@@ -162,7 +165,7 @@ JSON;
                     $stream = $chatMemory->getCompletionStream();
                     while ($stream->isValid()) {
                         $chunk = $stream->current();
-                        $payloadJson = InterviewChatPayload::factory()
+                        $payloadJson = ChatPayload::factory()
                             ->createJson(
                                 'chat',
                                 $chatPrompt['chatHistoryId'] ?? '',
@@ -184,7 +187,7 @@ JSON;
                 case 'batch':
                     $this->logger->debug('Processing batch completion');
                     $msg = $this->translator->trans('batch_sent - batchId:') . $chatMemory->getBatchId();
-                    $payloadJson = InterviewChatPayload::factory()
+                    $payloadJson = ChatPayload::factory()
                         ->createJson(
                             'chat',
                             $chatPrompt['chatHistoryId'] ?? '',
@@ -194,7 +197,7 @@ JSON;
                 case 'default':
                 default:
                     $this->logger->debug('Processing default completion');
-                    $payloadJson = InterviewChatPayload::factory()
+                    $payloadJson = ChatPayload::factory()
                         ->createJson(
                             'chat',
                             $chatPrompt['chatHistoryId'] ?? '',
@@ -220,7 +223,7 @@ JSON;
         RedirectionExceptionInterface |
         ServerExceptionInterface |
         TransportExceptionInterface $e) {
-            $this->logger->error('Error in InterviewChatUnifiedMessageService' . $e->getMessage());
+            $this->logger->error('Error in ChatUnifiedMessageService' . $e->getMessage());
         }
     }
 }
